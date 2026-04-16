@@ -1,0 +1,1089 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CareAxis Clinic Appointment System Report</title>
+    <style>
+      :root {
+        --ink: #17324d;
+        --muted: #5d7288;
+        --line: #d8e4ef;
+        --teal: #0f766e;
+        --teal-soft: #d9f3ef;
+        --blue: #1d4ed8;
+        --blue-soft: #dbeafe;
+        --orange: #ea580c;
+        --orange-soft: #ffedd5;
+        --rose: #be123c;
+        --rose-soft: #ffe4ea;
+        --shadow: 0 18px 40px rgba(23, 50, 77, 0.08);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      @page {
+        size: A4;
+        margin: 16mm;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Segoe UI", Arial, sans-serif;
+        color: var(--ink);
+        background: #edf4f9;
+      }
+
+      .document {
+        width: 210mm;
+        margin: 0 auto;
+        background: white;
+      }
+
+      .page {
+        position: relative;
+        min-height: 297mm;
+        padding: 18mm 16mm;
+        background: white;
+        page-break-after: always;
+      }
+
+      .page:last-child {
+        page-break-after: auto;
+      }
+
+      .cover {
+        overflow: hidden;
+        background:
+          radial-gradient(circle at top right, rgba(29, 78, 216, 0.15), transparent 28%),
+          radial-gradient(circle at bottom left, rgba(15, 118, 110, 0.18), transparent 28%),
+          linear-gradient(180deg, #f8fcff 0%, #eef7fb 100%);
+      }
+
+      .cover::before,
+      .cover::after {
+        content: "";
+        position: absolute;
+        border-radius: 999px;
+      }
+
+      .cover::before {
+        top: -90px;
+        right: -30px;
+        width: 240px;
+        height: 240px;
+        background: rgba(15, 118, 110, 0.08);
+      }
+
+      .cover::after {
+        bottom: 40px;
+        left: -60px;
+        width: 260px;
+        height: 260px;
+        background: rgba(234, 88, 12, 0.08);
+      }
+
+      .brand-bar {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        padding: 8px 14px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.8);
+        border: 1px solid rgba(23, 50, 77, 0.08);
+        box-shadow: var(--shadow);
+      }
+
+      .brand-mark {
+        width: 38px;
+        height: 38px;
+        border-radius: 14px;
+        display: inline-grid;
+        place-items: center;
+        font-weight: 700;
+        color: white;
+        background: linear-gradient(135deg, var(--teal), var(--orange));
+      }
+
+      .eyebrow {
+        margin: 0 0 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        font-size: 11px;
+        color: var(--muted);
+      }
+
+      h1,
+      h2,
+      h3 {
+        margin: 0;
+        font-family: Georgia, "Times New Roman", serif;
+        font-weight: 700;
+        color: var(--ink);
+      }
+
+      h1 {
+        font-size: 34px;
+        line-height: 1.14;
+        max-width: 10ch;
+      }
+
+      h2 {
+        font-size: 23px;
+        margin-bottom: 10px;
+      }
+
+      h3 {
+        font-size: 16px;
+        margin-bottom: 8px;
+      }
+
+      p {
+        margin: 0 0 10px;
+        color: var(--ink);
+        line-height: 1.7;
+        font-size: 13px;
+      }
+
+      .muted {
+        color: var(--muted);
+      }
+
+      .cover-grid,
+      .two-col,
+      .three-col,
+      .metrics,
+      .stack-grid,
+      .role-grid,
+      .api-grid,
+      .result-grid,
+      .timeline {
+        display: grid;
+        gap: 12px;
+      }
+
+      .cover-grid {
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 22px;
+        align-items: start;
+        margin-top: 28px;
+      }
+
+      .cover-copy {
+        padding-top: 12mm;
+      }
+
+      .cover-copy .lead {
+        margin-top: 16px;
+        font-size: 15px;
+        max-width: 48ch;
+      }
+
+      .cover-card,
+      .panel,
+      .metric,
+      .info-card,
+      .timeline-item,
+      .role-card,
+      .api-card,
+      .result-card {
+        background: white;
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        box-shadow: var(--shadow);
+      }
+
+      .cover-card,
+      .panel,
+      .metric,
+      .info-card,
+      .timeline-item,
+      .role-card,
+      .api-card,
+      .result-card {
+        padding: 16px;
+      }
+
+      .cover-badges {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-top: 18px;
+      }
+
+      .badge {
+        padding: 14px;
+        border-radius: 18px;
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.72);
+      }
+
+      .badge strong,
+      .metric strong {
+        display: block;
+        font-size: 20px;
+        margin-bottom: 4px;
+      }
+
+      .meta-table,
+      .schema-table,
+      .api-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+      }
+
+      .meta-table td {
+        padding: 9px 0;
+        border-bottom: 1px solid var(--line);
+        vertical-align: top;
+      }
+
+      .meta-table td:first-child {
+        width: 35%;
+        color: var(--muted);
+        font-weight: 600;
+      }
+
+      .section-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: end;
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+
+      .section-index {
+        min-width: 52px;
+        min-height: 52px;
+        border-radius: 18px;
+        display: inline-grid;
+        place-items: center;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 22px;
+        color: white;
+        background: linear-gradient(135deg, var(--blue), var(--teal));
+      }
+
+      .two-col {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .three-col {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .metrics {
+        grid-template-columns: repeat(4, 1fr);
+      }
+
+      .stack-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .role-grid,
+      .result-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .api-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .toc-list {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .toc-list li {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 10px 0;
+        border-bottom: 1px dashed var(--line);
+      }
+
+      .accent-teal {
+        background: linear-gradient(180deg, var(--teal-soft), white);
+      }
+
+      .accent-blue {
+        background: linear-gradient(180deg, var(--blue-soft), white);
+      }
+
+      .accent-orange {
+        background: linear-gradient(180deg, var(--orange-soft), white);
+      }
+
+      .accent-rose {
+        background: linear-gradient(180deg, var(--rose-soft), white);
+      }
+
+      .architecture-box {
+        margin-top: 10px;
+        padding: 18px;
+        border-radius: 22px;
+        border: 1px solid var(--line);
+        background: linear-gradient(180deg, rgba(219, 234, 254, 0.5), rgba(255, 255, 255, 0.95));
+      }
+
+      .arch-flow {
+        display: grid;
+        gap: 12px;
+        margin-top: 16px;
+      }
+
+      .arch-node {
+        position: relative;
+        padding: 16px;
+        border-radius: 18px;
+        border: 1px solid var(--line);
+        background: white;
+      }
+
+      .arch-node::after {
+        content: "↓";
+        position: absolute;
+        left: 50%;
+        bottom: -25px;
+        transform: translateX(-50%);
+        color: var(--muted);
+        font-size: 20px;
+      }
+
+      .arch-node:last-child::after {
+        display: none;
+      }
+
+      .role-tag {
+        display: inline-block;
+        margin-bottom: 10px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .tag-admin {
+        background: var(--blue-soft);
+        color: var(--blue);
+      }
+
+      .tag-doctor {
+        background: var(--teal-soft);
+        color: var(--teal);
+      }
+
+      .tag-patient {
+        background: var(--orange-soft);
+        color: var(--orange);
+      }
+
+      .schema-table th,
+      .schema-table td,
+      .api-table th,
+      .api-table td {
+        padding: 10px 12px;
+        border: 1px solid var(--line);
+        text-align: left;
+        vertical-align: top;
+      }
+
+      .schema-table th,
+      .api-table th {
+        background: #eff7fd;
+        font-weight: 700;
+      }
+
+      .timeline-item {
+        position: relative;
+        padding-left: 48px;
+      }
+
+      .timeline-item::before {
+        content: attr(data-step);
+        position: absolute;
+        left: 16px;
+        top: 16px;
+        width: 22px;
+        height: 22px;
+        border-radius: 999px;
+        display: grid;
+        place-items: center;
+        font-size: 11px;
+        font-weight: 700;
+        color: white;
+        background: linear-gradient(135deg, var(--teal), var(--blue));
+      }
+
+      .footer-note {
+        position: absolute;
+        left: 16mm;
+        right: 16mm;
+        bottom: 10mm;
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        font-size: 11px;
+        color: var(--muted);
+      }
+
+      .small {
+        font-size: 12px;
+      }
+
+      ul {
+        margin: 10px 0 0 18px;
+        padding: 0;
+      }
+
+      li {
+        margin-bottom: 7px;
+        line-height: 1.55;
+        font-size: 13px;
+      }
+
+      @media print {
+        body {
+          background: white;
+        }
+
+        .document {
+          width: auto;
+          margin: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="document">
+      <section class="page cover">
+        <div class="brand-bar">
+          <div class="brand-mark">CA</div>
+          <div>
+            <div style="font-weight: 700;">CareAxis</div>
+            <div class="small muted">Clinic Appointment System</div>
+          </div>
+        </div>
+
+        <div class="cover-grid">
+          <div class="cover-copy">
+            <p class="eyebrow">Course Project Report</p>
+            <h1>Clinic Appointment System Using MERN Stack</h1>
+            <p class="lead muted">
+              A visually designed academic report and case study for a zero-cost healthcare
+              management web application built with React, Node.js, Express, and MongoDB.
+            </p>
+
+            <div class="cover-badges">
+              <div class="badge">
+                <strong>3</strong>
+                <span class="muted">roles supported</span>
+              </div>
+              <div class="badge">
+                <strong>10+</strong>
+                <span class="muted">major modules and flows</span>
+              </div>
+              <div class="badge">
+                <strong>0</strong>
+                <span class="muted">paid services required</span>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="cover-card">
+              <p class="eyebrow">Submission Details</p>
+              <table class="meta-table">
+                <tr><td>Project Title</td><td>CareAxis Clinic Appointment System</td></tr>
+                <tr><td>Domain</td><td>Medical / Healthcare Management</td></tr>
+                <tr><td>Technology</td><td>MERN Stack</td></tr>
+                <tr><td>Type</td><td>Zero-cost Full Stack Web Application</td></tr>
+                <tr><td>Date</td><td>14 April 2026</td></tr>
+                <tr><td>Prepared For</td><td>Activity Based / Practical Based Learning</td></tr>
+              </table>
+            </div>
+
+            <div class="cover-card accent-teal">
+              <p class="eyebrow">Project Focus</p>
+              <p>
+                The application digitizes clinic scheduling by giving patients, doctors, and
+                administrators role-specific tools for appointments, availability, and reporting.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer-note">
+          <span>Designed submission document</span>
+          <span>CareAxis Project Report</span>
+        </div>
+      </section>
+
+      <section class="page">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Overview</p>
+            <h2>Abstract and Table of Contents</h2>
+          </div>
+          <div class="section-index">01</div>
+        </div>
+
+        <div class="two-col">
+          <div class="panel accent-blue">
+            <h3>Abstract</h3>
+            <p>
+              CareAxis is a full-stack clinic appointment platform created to replace manual
+              booking registers and fragmented scheduling practices with a centralized digital
+              system. The application uses React for the user interface, Express and Node.js
+              for backend APIs, and MongoDB for persistent storage. It includes JWT-based
+              authentication, role-based permissions, doctor profile management, appointment
+              validation, dashboards, and case-oriented workflow support.
+            </p>
+            <p>
+              The project is fully suitable for academic use because it demonstrates practical
+              MERN concepts without relying on paid APIs, payment gateways, cloud storage, or
+              third-party communication services.
+            </p>
+          </div>
+
+          <div class="panel">
+            <h3>Contents</h3>
+            <ol class="toc-list">
+              <li><span>1. Introduction and Problem Context</span><span>3</span></li>
+              <li><span>2. Objectives and Scope</span><span>3</span></li>
+              <li><span>3. Existing vs Proposed System</span><span>4</span></li>
+              <li><span>4. Architecture and Technology Stack</span><span>4</span></li>
+              <li><span>5. Modules and Role Permissions</span><span>5</span></li>
+              <li><span>6. Database Design and API Summary</span><span>6</span></li>
+              <li><span>7. Case Study and Workflow Analysis</span><span>7</span></li>
+              <li><span>8. Testing, Results, and Future Scope</span><span>8</span></li>
+              <li><span>9. Conclusion</span><span>8</span></li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="metrics" style="margin-top: 16px;">
+          <div class="metric accent-teal">
+            <strong>JWT</strong>
+            <span class="muted">secure authentication</span>
+          </div>
+          <div class="metric accent-orange">
+            <strong>CRUD</strong>
+            <span class="muted">full record management</span>
+          </div>
+          <div class="metric accent-blue">
+            <strong>Charts</strong>
+            <span class="muted">dashboard analytics</span>
+          </div>
+          <div class="metric accent-rose">
+            <strong>MongoDB</strong>
+            <span class="muted">local zero-cost database</span>
+          </div>
+        </div>
+
+        <div class="footer-note">
+          <span>Abstract and project map</span>
+          <span>Page 2</span>
+        </div>
+      </section>
+
+      <section class="page">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Foundation</p>
+            <h2>Introduction, Problem Statement, and Objectives</h2>
+          </div>
+          <div class="section-index">02</div>
+        </div>
+
+        <div class="two-col">
+          <div class="panel">
+            <h3>Introduction</h3>
+            <p>
+              Small clinics often depend on notebooks, calls, spreadsheets, and informal staff
+              coordination to manage appointments. As patient volume grows, this manual workflow
+              creates delays, confusion, and avoidable booking conflicts. A digital appointment
+              platform can improve the quality of clinic operations while also reducing the
+              administrative burden on staff.
+            </p>
+            <p>
+              CareAxis addresses this challenge by providing a centralized web application for
+              administrators, doctors, and patients. Each role sees only the features required
+              for its tasks, making the system simple, secure, and efficient.
+            </p>
+          </div>
+
+          <div class="panel accent-orange">
+            <h3>Problem Statement</h3>
+            <ul>
+              <li>Manual appointment handling causes booking errors and double scheduling.</li>
+              <li>Doctor availability is difficult to verify in real time.</li>
+              <li>Patients do not have a clear self-service booking workflow.</li>
+              <li>Clinic staff lack a single dashboard for monitoring appointment status.</li>
+              <li>There is no structured role-based system for tracking consultation progress.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="three-col" style="margin-top: 14px;">
+          <div class="info-card accent-teal">
+            <h3>Main Objective</h3>
+            <p>Build a practical MERN application that digitizes clinic scheduling and workflow management.</p>
+          </div>
+          <div class="info-card accent-blue">
+            <h3>Academic Value</h3>
+            <p>Demonstrate authentication, CRUD, dashboards, validation, schema design, and role-based routing.</p>
+          </div>
+          <div class="info-card accent-rose">
+            <h3>Zero-Cost Constraint</h3>
+            <p>Run locally with MongoDB Community Server and avoid paid APIs or cloud dependencies.</p>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-top: 14px;">
+          <h3>Specific Objectives</h3>
+          <div class="stack-grid">
+            <div class="info-card">
+              <ul>
+                <li>Provide secure login for admin, doctor, and patient roles.</li>
+                <li>Allow admin users to create and manage doctor accounts.</li>
+                <li>Enable patients to browse specialists and request appointments.</li>
+              </ul>
+            </div>
+            <div class="info-card">
+              <ul>
+                <li>Prevent duplicate bookings for the same doctor and slot.</li>
+                <li>Allow doctors to confirm, complete, or cancel appointments.</li>
+                <li>Present dashboard summaries for each role.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer-note">
+          <span>Project motivation and objectives</span>
+          <span>Page 3</span>
+        </div>
+      </section>
+
+      <section class="page">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Design</p>
+            <h2>Scope, Existing System, Proposed System, and Architecture</h2>
+          </div>
+          <div class="section-index">03</div>
+        </div>
+
+        <div class="two-col">
+          <div class="panel accent-rose">
+            <h3>Existing Manual System</h3>
+            <ul>
+              <li>Appointments are written in registers or managed over phone calls.</li>
+              <li>Doctor schedules are coordinated manually by staff.</li>
+              <li>Appointment status tracking is inconsistent.</li>
+              <li>Reports are difficult to prepare and update.</li>
+            </ul>
+          </div>
+
+          <div class="panel accent-teal">
+            <h3>Proposed Digital System</h3>
+            <ul>
+              <li>Centralized appointment storage in MongoDB.</li>
+              <li>Doctor directory with specialization and availability details.</li>
+              <li>Role-based dashboards for admin, doctor, and patient.</li>
+              <li>Booking validation to block unavailable or duplicate slots.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="architecture-box">
+          <p class="eyebrow">System Architecture</p>
+          <h3>Three-Layer MERN Application Flow</h3>
+          <div class="arch-flow">
+            <div class="arch-node">
+              <strong>React Frontend</strong>
+              <p class="small muted">Public pages, protected dashboards, forms, doctor listing, appointment views, and charts.</p>
+            </div>
+            <div class="arch-node">
+              <strong>Express REST API</strong>
+              <p class="small muted">Authentication, doctor management, appointment validation, dashboard aggregation, and access control.</p>
+            </div>
+            <div class="arch-node">
+              <strong>MongoDB Database</strong>
+              <p class="small muted">Stores users, doctor profiles, appointment records, status history, and timestamps.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="three-col" style="margin-top: 16px;">
+          <div class="info-card">
+            <h3>Included in Scope</h3>
+            <p class="small">Registration, login, role control, appointment booking, doctor management, and analytics dashboards.</p>
+          </div>
+          <div class="info-card">
+            <h3>Excluded from Scope</h3>
+            <p class="small">Online payment, SMS reminders, telemedicine, prescription PDFs, and cloud deployment.</p>
+          </div>
+          <div class="info-card">
+            <h3>Why This Scope Works</h3>
+            <p class="small">It is realistic, manageable for academic evaluation, and rich enough to show full-stack capability.</p>
+          </div>
+        </div>
+
+        <div class="footer-note">
+          <span>Architecture and system positioning</span>
+          <span>Page 4</span>
+        </div>
+      </section>
+
+      <section class="page">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Implementation</p>
+            <h2>Technology Stack, Modules, and User Roles</h2>
+          </div>
+          <div class="section-index">04</div>
+        </div>
+
+        <div class="three-col">
+          <div class="info-card accent-blue">
+            <h3>Frontend</h3>
+            <ul>
+              <li>React.js</li>
+              <li>Vite</li>
+              <li>React Router DOM</li>
+              <li>Recharts</li>
+              <li>Custom CSS UI</li>
+            </ul>
+          </div>
+          <div class="info-card accent-teal">
+            <h3>Backend</h3>
+            <ul>
+              <li>Node.js</li>
+              <li>Express.js</li>
+              <li>JWT Authentication</li>
+              <li>bcryptjs</li>
+              <li>Morgan and CORS</li>
+            </ul>
+          </div>
+          <div class="info-card accent-orange">
+            <h3>Database</h3>
+            <ul>
+              <li>MongoDB Community Server</li>
+              <li>Mongoose Models</li>
+              <li>Schema validation</li>
+              <li>Unique appointment indexing</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-top: 16px;">
+          <h3>Main Application Modules</h3>
+          <div class="stack-grid">
+            <div class="info-card">
+              <strong>Authentication Module</strong>
+              <p class="small muted">Register patient accounts, login users, issue JWT tokens, and load current user context.</p>
+            </div>
+            <div class="info-card">
+              <strong>Doctor Management Module</strong>
+              <p class="small muted">Create doctor accounts, store specializations, fees, bios, and weekly availability.</p>
+            </div>
+            <div class="info-card">
+              <strong>Appointment Module</strong>
+              <p class="small muted">Book, list, update, and cancel appointments with role-wise access rules.</p>
+            </div>
+            <div class="info-card">
+              <strong>Dashboard Module</strong>
+              <p class="small muted">Summaries, trends, top doctors, care team visibility, and workload analysis.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-top: 16px;">
+          <h3>User Roles and Permissions</h3>
+          <div class="role-grid">
+            <div class="role-card">
+              <span class="role-tag tag-admin">Admin</span>
+              <ul>
+                <li>Create doctor accounts</li>
+                <li>View all appointments</li>
+                <li>Update doctor details</li>
+                <li>Track dashboard metrics</li>
+              </ul>
+            </div>
+            <div class="role-card">
+              <span class="role-tag tag-doctor">Doctor</span>
+              <ul>
+                <li>View assigned appointment queue</li>
+                <li>Add doctor notes</li>
+                <li>Confirm or complete visits</li>
+                <li>Edit own profile details</li>
+              </ul>
+            </div>
+            <div class="role-card">
+              <span class="role-tag tag-patient">Patient</span>
+              <ul>
+                <li>Register and log in</li>
+                <li>Browse doctor directory</li>
+                <li>Book or cancel appointments</li>
+                <li>Track appointment history</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer-note">
+          <span>Tools, modules, and permissions</span>
+          <span>Page 5</span>
+        </div>
+      </section>
+
+      <section class="page">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Data and APIs</p>
+            <h2>Database Design and REST Endpoint Summary</h2>
+          </div>
+          <div class="section-index">05</div>
+        </div>
+
+        <div class="panel">
+          <h3>MongoDB Collection Design</h3>
+          <table class="schema-table">
+            <thead>
+              <tr>
+                <th>Collection</th>
+                <th>Important Fields</th>
+                <th>Purpose</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>User</strong></td>
+                <td>name, email, password, role, phone, gender, age, lastLoginAt</td>
+                <td>Stores admin, doctor, and patient login identity.</td>
+              </tr>
+              <tr>
+                <td><strong>DoctorProfile</strong></td>
+                <td>user, specialization, qualifications, experienceYears, consultationFee, location, availability</td>
+                <td>Stores doctor-specific metadata and schedule slots.</td>
+              </tr>
+              <tr>
+                <td><strong>Appointment</strong></td>
+                <td>patient, doctor, appointmentDate, reason, status, doctorNotes, cancellationReason</td>
+                <td>Tracks the lifecycle of each booked consultation.</td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="small muted" style="margin-top: 10px;">
+            A unique compound index on doctor and appointmentDate prevents duplicate bookings for the same slot.
+          </p>
+        </div>
+
+        <div class="api-grid" style="margin-top: 16px;">
+          <div class="api-card accent-blue">
+            <h3>Authentication APIs</h3>
+            <table class="api-table">
+              <tr><th>Method</th><th>Endpoint</th></tr>
+              <tr><td>POST</td><td>/api/auth/register</td></tr>
+              <tr><td>POST</td><td>/api/auth/login</td></tr>
+              <tr><td>GET</td><td>/api/auth/me</td></tr>
+            </table>
+          </div>
+          <div class="api-card accent-teal">
+            <h3>Doctor APIs</h3>
+            <table class="api-table">
+              <tr><th>Method</th><th>Endpoint</th></tr>
+              <tr><td>GET</td><td>/api/doctors</td></tr>
+              <tr><td>GET</td><td>/api/doctors/:id</td></tr>
+              <tr><td>POST</td><td>/api/doctors</td></tr>
+              <tr><td>PUT</td><td>/api/doctors/:id</td></tr>
+            </table>
+          </div>
+          <div class="api-card accent-orange">
+            <h3>Appointment APIs</h3>
+            <table class="api-table">
+              <tr><th>Method</th><th>Endpoint</th></tr>
+              <tr><td>GET</td><td>/api/appointments</td></tr>
+              <tr><td>POST</td><td>/api/appointments</td></tr>
+              <tr><td>PATCH</td><td>/api/appointments/:id/status</td></tr>
+              <tr><td>PATCH</td><td>/api/appointments/:id/cancel</td></tr>
+            </table>
+          </div>
+          <div class="api-card accent-rose">
+            <h3>Dashboard API</h3>
+            <table class="api-table">
+              <tr><th>Method</th><th>Endpoint</th></tr>
+              <tr><td>GET</td><td>/api/dashboard/overview</td></tr>
+            </table>
+            <p class="small muted" style="margin-top: 10px;">
+              Returns role-specific summary metrics and chart-friendly aggregates.
+            </p>
+          </div>
+        </div>
+
+        <div class="footer-note">
+          <span>Schema and API design</span>
+          <span>Page 6</span>
+        </div>
+      </section>
+
+      <section class="page">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Case Study</p>
+            <h2>Workflow Analysis and Real-World Scenario</h2>
+          </div>
+          <div class="section-index">06</div>
+        </div>
+
+        <div class="panel accent-teal">
+          <h3>Case Background</h3>
+          <p>
+            Consider a small neighborhood clinic with one administrator, several doctors, and a
+            growing number of patients. Previously, the clinic managed appointments using calls,
+            handwritten notes, and informal staff coordination. This resulted in delays, missed
+            updates, and difficulty tracking the status of consultations.
+          </p>
+        </div>
+
+        <div class="timeline">
+          <div class="timeline-item" data-step="1">
+            <h3>Admin Setup</h3>
+            <p class="small">The administrator creates doctor accounts with specialization, fee, and weekly availability.</p>
+          </div>
+          <div class="timeline-item" data-step="2">
+            <h3>Patient Registration</h3>
+            <p class="small">The patient creates an account and opens the doctor directory.</p>
+          </div>
+          <div class="timeline-item" data-step="3">
+            <h3>Appointment Request</h3>
+            <p class="small">The patient selects a doctor, a valid future date and time, and enters the reason for consultation.</p>
+          </div>
+          <div class="timeline-item" data-step="4">
+            <h3>Validation</h3>
+            <p class="small">The system verifies doctor existence, future date, availability window, and slot uniqueness.</p>
+          </div>
+          <div class="timeline-item" data-step="5">
+            <h3>Doctor Action</h3>
+            <p class="small">The doctor reviews the queue, adds notes, and updates status to confirmed, completed, or cancelled.</p>
+          </div>
+          <div class="timeline-item" data-step="6">
+            <h3>Admin Monitoring</h3>
+            <p class="small">The administrator tracks totals, trends, recent bookings, and doctor performance.</p>
+          </div>
+        </div>
+
+        <div class="two-col" style="margin-top: 14px;">
+          <div class="panel">
+            <h3>Illustrative Scenario</h3>
+            <p>
+              Riya Sharma logs in as a patient and chooses Dr. Asha Menon for recurring headache
+              and fever. She selects a future slot inside the doctor's published schedule. The
+              application accepts the request only if the slot is free. Dr. Asha later confirms
+              the booking and completes the consultation after the visit. The updated status then
+              appears in the patient dashboard.
+            </p>
+          </div>
+          <div class="panel accent-orange">
+            <h3>Case Outcome</h3>
+            <ul>
+              <li>No manual phone coordination is required for basic booking.</li>
+              <li>The clinic avoids duplicate scheduling.</li>
+              <li>Doctors get a clear queue view.</li>
+              <li>Patients can see appointment progress transparently.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="footer-note">
+          <span>Case study and workflow reasoning</span>
+          <span>Page 7</span>
+        </div>
+      </section>
+
+      <section class="page">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Evaluation</p>
+            <h2>Testing, Results, Future Enhancements, and Conclusion</h2>
+          </div>
+          <div class="section-index">07</div>
+        </div>
+
+        <div class="result-grid">
+          <div class="result-card accent-blue">
+            <h3>Technical Checks</h3>
+            <ul>
+              <li>Client linting passed</li>
+              <li>Production build passed</li>
+              <li>Server syntax checks passed</li>
+            </ul>
+          </div>
+          <div class="result-card accent-teal">
+            <h3>Functional Outcomes</h3>
+            <ul>
+              <li>Admin can create doctors</li>
+              <li>Patients can request appointments</li>
+              <li>Doctors can update status and notes</li>
+            </ul>
+          </div>
+          <div class="result-card accent-orange">
+            <h3>Business Impact</h3>
+            <ul>
+              <li>Faster booking workflow</li>
+              <li>Reduced manual coordination</li>
+              <li>Improved clinic visibility</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="two-col" style="margin-top: 16px;">
+          <div class="panel">
+            <h3>Future Enhancements</h3>
+            <ul>
+              <li>Email and SMS appointment reminders</li>
+              <li>Prescription and report management</li>
+              <li>PDF export and advanced reporting</li>
+              <li>Multi-branch clinic support</li>
+              <li>Telemedicine and video consultation</li>
+            </ul>
+          </div>
+          <div class="panel accent-rose">
+            <h3>Conclusion</h3>
+            <p>
+              CareAxis demonstrates how a small healthcare workflow can be transformed using a
+              well-structured MERN application. The system combines authentication, validation,
+              dashboards, database design, and role-based interaction into a project that is
+              both academically strong and practically meaningful.
+            </p>
+            <p>
+              Because it is zero-cost, realistic, and technically complete, it is well suited
+              for a practical course project in web development or full stack development.
+            </p>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-top: 16px;">
+          <h3>References</h3>
+          <p class="small muted">
+            React Documentation, Express.js Documentation, MongoDB Documentation, Node.js Documentation,
+            JSON Web Token concepts, and practical MERN stack development references.
+          </p>
+        </div>
+
+        <div class="footer-note">
+          <span>Results and closing summary</span>
+          <span>Page 8</span>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
