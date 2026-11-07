@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:7-jammy
+    container_name: careaxis-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_DATABASE=careaxis
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - careaxis-network
+
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: careaxis-server
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+      - MONGO_URI=mongodb://mongodb:27017/careaxis
+      - JWT_SECRET=production_secret_key_change_in_prod
+    depends_on:
+      - mongodb
+    networks:
+      - careaxis-network
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: careaxis-client
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - server
+    networks:
+      - careaxis-network
+
+volumes:
+  mongo-data:
+
+networks:
+  careaxis-network:
+    driver: bridge
